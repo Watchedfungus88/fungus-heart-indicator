@@ -1,0 +1,13 @@
+{
+  "fungus_hearts.title": "Fungus' Heart Indicator",
+  "fungus_hearts.enabled": "Heart indicator",
+  "fungus_hearts.animations": "Animations",
+  "fungus_hearts.self": "Show own hearts",
+  "fungus_hearts.self_tip": "Third-person only. Hidden while sneaking, invisible, or spectating.",
+  "fungus_hearts.distance": "Render distance: %s blocks",
+  "fungus_hearts.distance_unlimited": "Render distance: Unlimited",
+  "fungus_hearts.distance_tip": "8–128 blocks. Far right: no indicator distance cap. Minecraft's entity visibility and render distance still apply.",
+  "fungus_hearts.size": "Heart size: %s%%",
+  "fungus_hearts.auto_saved": "Changes save automatically. Esc to return.",
+  "fungus_hearts.save_failed": "Could not save. Check the log; Esc to retry."
+}

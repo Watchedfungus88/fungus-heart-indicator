@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fungus_heart_indicator",
+  "version": "${version}",
+  "name": "Fungus' Heart Indicator",
+  "description": "Animated vanilla hearts above players, using Minecraft's own resource-pack-aware sprites.",
+  "authors": ["Fungus"],
+  "contact": {
+    "homepage": "https://github.com/Watchedfungus88/fungus-heart-indicator",
+    "sources": "https://github.com/Watchedfungus88/fungus-heart-indicator",
+    "issues": "https://github.com/Watchedfungus88/fungus-heart-indicator/issues"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "icon": "assets/fungus_heart_indicator/icon.png",
+  "entrypoints": {
+    "client": ["dev.fungus.hearts.HeartIndicator"],
+    "modmenu": ["dev.fungus.hearts.ui.HeartModMenu"]
+  },
+  "mixins": ["fungus-heart-indicator.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "${minecraft}",
+    "java": ">=${java}"
+  },
+  "suggests": { "modmenu": ">=${modmenu}" }
+}

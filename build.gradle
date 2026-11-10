@@ -1,0 +1,84 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.17.20' apply false
+    id 'net.fabricmc.fabric-loom-remap' version '1.17.20' apply false
+}
+
+def target = providers.gradleProperty('minecraft_version').getOrElse('26.2')
+def targets = [
+        '26.3': [menu: '21.0.0', java: 25, platform: '26.3'],
+        '26.2': [menu: '20.0.3', java: 25, platform: 'modern-platform'],
+        '26.1': [menu: '18.0.2', java: 25, platform: '26.1'],
+        '1.21.11': [menu: '17.0.1', java: 21, platform: 'legacy']
+]
+if (!targets.containsKey(target)) throw new GradleException("Unsupported Minecraft version: $target")
+def settings = targets[target]
+def legacy = target == '1.21.11'
+apply plugin: legacy ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+
+group = 'dev.fungus'
+version = "1.3.0+$target"
+base { archivesName = 'fungus-heart-indicator' }
+layout.buildDirectory = layout.projectDirectory.dir("build/$target")
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://api.modrinth.com/maven' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:$target"
+    if (legacy) mappings loom.officialMojangMappings()
+    if (legacy) modImplementation 'net.fabricmc:fabric-loader:0.19.3'
+    else implementation 'net.fabricmc:fabric-loader:0.19.3'
+    if (legacy) {
+        modCompileOnly "maven.modrinth:modmenu:${settings.menu}"
+        modRuntimeOnly "maven.modrinth:modmenu:${settings.menu}"
+    } else {
+        compileOnly "maven.modrinth:modmenu:${settings.menu}"
+        runtimeOnly "maven.modrinth:modmenu:${settings.menu}"
+    }
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.13.4'
+}
+
+sourceSets {
+    main.java.srcDirs += ["src/${legacy ? 'legacy' : 'modern'}/java", "src/${settings.platform}/java"].unique()
+    test.java.srcDir "src/$target/test"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    withSourcesJar()
+}
+tasks.withType(JavaCompile).configureEach { options.release = settings.java }
+
+processResources {
+    def values = [version: project.version, minecraft: target, java: settings.java,
+                  modmenu: settings.menu, mixinJava: "JAVA_${settings.java}"]
+    inputs.properties values
+    filesMatching(['fabric.mod.json', 'fungus-heart-indicator.mixins.json']) { expand values }
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'java.awt.headless', 'true'
+    systemProperty 'hearts.vanillaHeartType',
+            "net.minecraft.client.gui.${target in ['26.1', '1.21.11'] ? 'Gui' : 'Hud'}\$HeartType"
+}
+jar { from('LICENSE') }
+
+['standard', 'extreme'].each { mode ->
+    tasks.register("benchmarkHearts${mode.capitalize()}", JavaExec) {
+        dependsOn testClasses
+        classpath = sourceSets.test.runtimeClasspath
+        mainClass = 'dev.fungus.hearts.HeartCpuBenchmark'
+        args mode
+        systemProperty 'java.awt.headless', 'true'
+        systemProperty 'hearts.reportDirectory', layout.buildDirectory.dir('reports').get().asFile
+    }
+}
+tasks.named('benchmarkHeartsExtreme') { mustRunAfter 'benchmarkHeartsStandard' }
+tasks.register('benchmarkHearts') {
+    dependsOn 'benchmarkHeartsStandard', 'benchmarkHeartsExtreme'
+}
