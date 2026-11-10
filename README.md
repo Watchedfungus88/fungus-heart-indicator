@@ -2,7 +2,7 @@
 
 ![Fungus's Heart Indicator icon](assets/fungus-heart-indicator-icon.png)
 
-A client-side Fabric mod that puts vanilla hearts above players' heads.
+A client-side Fabric mod that shows players' health as hearts above their heads.
 It uses Minecraft's own sprites, so your resource pack works with it too.
 
 - Half hearts, absorption, poison, wither, frozen and hardcore hearts.
@@ -42,4 +42,3 @@ Targets: `26.3`, `26.2`, `26.1`, `1.21.11`. The installable JAR is in
 
 Every target runs the headless tests. For the optional CPU benchmark, run
 `./gradlew benchmarkHearts -Pminecraft_version=26.3`.
-In-game OpenGL and Vulkan testing is still pending.
