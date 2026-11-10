@@ -1,6 +1,6 @@
-# Fungus' Heart Indicator
+# Fungus's Heart Indicator
 
-![Fungus' Heart Indicator icon](assets/fungus-heart-indicator-icon.png)
+![Fungus's Heart Indicator icon](assets/fungus-heart-indicator-icon.png)
 
 A client-side Fabric mod that puts vanilla hearts above players' heads.
 It uses Minecraft's own sprites, so your resource pack works with it too.
@@ -12,7 +12,8 @@ It uses Minecraft's own sprites, so your resource pack works with it too.
 
 ## Install
 
-Choose the JAR that matches your Minecraft version. Requires Fabric Loader
+[Download the latest release](https://github.com/Watchedfungus88/fungus-heart-indicator/releases/latest)
+and choose the JAR that matches your Minecraft version. Requires Fabric Loader
 0.19.3 or newer. Fabric API isn't required by this mod.
 
 | Minecraft | Java | Mod Menu for settings |

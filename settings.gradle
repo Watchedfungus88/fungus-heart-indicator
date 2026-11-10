@@ -4,4 +4,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'Fungus Heart Indicator'
+rootProject.name = "Fungus's Heart Indicator"

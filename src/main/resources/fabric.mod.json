@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "fungus_heart_indicator",
   "version": "${version}",
-  "name": "Fungus' Heart Indicator",
+  "name": "Fungus's Heart Indicator",
   "description": "Animated vanilla hearts above players, using Minecraft's own resource-pack-aware sprites.",
   "authors": ["Fungus"],
   "contact": {
