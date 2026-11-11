@@ -3,7 +3,7 @@
   "id": "fungus_heart_indicator",
   "version": "${version}",
   "name": "Fungus's Heart Indicator",
-  "description": "Animated vanilla hearts above players, using Minecraft's own resource-pack-aware sprites.",
+  "description": "Shows health as hearts above players and selected living entities, with animations and simple settings.",
   "authors": ["Fungus"],
   "contact": {
     "homepage": "https://github.com/Watchedfungus88/fungus-heart-indicator",

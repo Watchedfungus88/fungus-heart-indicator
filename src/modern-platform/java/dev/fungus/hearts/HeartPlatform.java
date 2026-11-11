@@ -20,6 +20,8 @@ public final class HeartPlatform {
 
     public static void rotate(PoseStack poses, Quaternionf orientation) { poses.mulPose(orientation); }
 
+    public static int sneakingColor(Minecraft client) { return 0x80FFFFFF; }
+
     public static boolean hidden(Minecraft client) { return client.gui.hud.isHidden(); }
     public static double nameRange(AbstractClientPlayer player) {
         return player.getAttributeValue(Attributes.NAME_TAG_DISTANCE);

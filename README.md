@@ -2,13 +2,14 @@
 
 ![Fungus's Heart Indicator icon](assets/fungus-heart-indicator-icon.png)
 
-A client-side Fabric mod that shows players' health as hearts above their heads.
+A client-side Fabric mod that shows health as hearts above players and selected living entities.
 It uses Minecraft's own sprites, so your resource pack works with it too.
 
 - Half hearts, absorption, poison, wither, frozen and hardcore hearts.
 - Damage flashes, healing flashes and regeneration animations.
 - Distance and size sliders, with an Unlimited distance option.
 - Optional hearts for your own player in third person.
+- Searchable entity selection, with only players enabled by default.
 
 ## Install
 
@@ -25,9 +26,10 @@ and choose the JAR that matches your Minecraft version. Requires Fabric Loader
 
 Put the JAR in your `mods` folder. Mod Menu is optional; install its dependencies
 if you use it. Changes save automatically. Press **Esc** to leave the settings.
+Use **Entities…** to enable or disable individual living entity types.
 
 Unlimited removes the mod's distance cap, but Minecraft still needs to render
-and track the player. Servers that hide health data may show inaccurate values.
+and track the entity. Servers that hide health data may show inaccurate values.
 
 ## Build
 

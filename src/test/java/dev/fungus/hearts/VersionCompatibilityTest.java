@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 class VersionCompatibilityTest {
     @Test void mixinTargetsAndCallbackDescriptorsMatchThisMinecraftJar() throws Exception {
-        for (String name : List.of("ClientPlayerMixin", "AvatarStateMixin", "EntityRendererMixin")) {
+        for (String name : List.of("LivingEntityMixin", "EntityStateMixin", "EntityRendererMixin")) {
             ClassNode mixin = read("dev/fungus/hearts/mixin/" + name);
             AnnotationNode annotation = find(mixin.invisibleAnnotations, "Lorg/spongepowered/asm/mixin/Mixin;");
             assertNotNull(annotation, name);

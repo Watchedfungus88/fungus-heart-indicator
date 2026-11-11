@@ -1,51 +1,56 @@
 package dev.fungus.hearts;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import org.joml.Quaternionf;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import org.joml.Quaternionf;
 
 public final class HeartRenderer {
-    private static final RenderType HEARTS = RenderTypes.text(HeartSprites.ATLAS);
     private HeartRenderer() {}
 
     public static void extract(Entity entity, EntityRenderState state, float partialTick, NameTagVisibility names) {
-        if (!(state instanceof AvatarRenderState) || !(entity instanceof AbstractClientPlayer player)) return;
+        extract(entity, state, partialTick, names, HeartIndicator.config(), Minecraft.getInstance(), HeartSprites::get);
+    }
+
+    static void extract(Entity entity, EntityRenderState state, float partialTick, NameTagVisibility names,
+                        HeartConfig config, Minecraft client, Supplier<HeartSprites.Palette> sprites) {
         HeartState target = (HeartState) state;
         target.fungus$setHearts(null);
-        HeartConfig config = HeartIndicator.config();
-        if (!config.enabled) return;
-        Minecraft client = Minecraft.getInstance();
-        boolean self = player == client.player;
-        if (!HeartVisibility.visible(config.enabled, HeartPlatform.hidden(client), player.isInvisible(),
-                player.isSpectator(), player.isAlive(), player.isDiscrete(), state.distanceToCameraSq,
+        if (!config.enabled || !(entity instanceof LivingEntity living)
+                || !config.entityEnabled(HeartEntityTypes.id(entity.getType()))) return;
+        boolean self = entity == client.player;
+        if (!HeartVisibility.visible(config.enabled, HeartPlatform.hidden(client), living.isInvisible(),
+                living.isSpectator(), living.isAlive(), living.isDiscrete(), state.distanceToCameraSq,
                 config.distance, self, config.showSelf, client.options.getCameraType().isFirstPerson(),
                 true)) return;
-        if (!self && state.nameTag == null) {
-
-            double nameRange = HeartPlatform.nameRange(player);
-            if (!HeartVisibility.beyondNameRange(state.distanceToCameraSq, nameRange)
-                    || !names.fungus$canShowName(player, state.distanceToCameraSq)) return;
+        if (!self) {
+            if (entity instanceof AbstractClientPlayer player) {
+                if (state.nameTag == null && (!HeartVisibility.needsNameCheck(state.distanceToCameraSq,
+                        HeartPlatform.nameRange(player), living.isDiscrete())
+                        || !names.fungus$canShowName(entity, HeartVisibility.namePolicyDistance(
+                                state.distanceToCameraSq, living.isDiscrete())))) return;
+            } else if (!HeartEntityVisibility.allowed(living, client)) return;
         }
-        float max = Math.max(1, HeartLayout.finiteHealth(player.getMaxHealth()));
-        float health = Math.min(max, HeartLayout.finiteHealth(player.getHealth()));
-        double time = (double) player.tickCount + partialTick;
-        HealthHistory history = ((PlayerHistory) player).fungus$history();
+        float max = Math.max(1, HeartLayout.finiteHealth(living.getMaxHealth()));
+        float health = Math.min(max, HeartLayout.finiteHealth(living.getHealth()));
+        double time = (double) living.tickCount + partialTick;
+        HealthHistory history = ((EntityHistory) living).fungus$history();
         history.update(health, max, time);
-        HeartStyle style = HeartStyle.forEffects(player.hasEffect(MobEffects.POISON),
-                player.hasEffect(MobEffects.WITHER), player.isFullyFrozen());
+        HeartStyle style = HeartStyle.forEffects(living.hasEffect(MobEffects.POISON),
+                living.hasEffect(MobEffects.WITHER), living.isFullyFrozen());
         target.fungus$setHearts(new HeartFrame(health, max,
-                HeartLayout.finiteHealth(player.getAbsorptionAmount()), history.previous(),
-                player.tickCount, history.flashing(time), style, player.hasEffect(MobEffects.REGENERATION),
-                player.level().getLevelData().isHardcore(), config.animations, config.scale,
-                HeartSprites.get()));
+                HeartLayout.finiteHealth(living.getAbsorptionAmount()), history.previous(),
+                living.tickCount, history.flashing(time), style, living.hasEffect(MobEffects.REGENERATION),
+                living instanceof AbstractClientPlayer && living.level().getLevelData().isHardcore(),
+                config.animations, config.scale, sprites.get(),
+                living.isDiscrete() ? HeartPlatform.sneakingColor(client) : -1));
     }
 
     public static void submit(EntityRenderState state, PoseStack poses,
@@ -63,7 +68,7 @@ public final class HeartRenderer {
         if (HeartPlatform.hasScore(state)) poses.translate(0, 9 * 1.15f * 0.025f, 0);
         HeartPlatform.rotate(poses, orientation);
         poses.scale(0.025f * frame.scale(), -0.025f * frame.scale(), 0.025f * frame.scale());
-        collector.submitCustomGeometry(poses, HEARTS, frame);
+        collector.submitCustomGeometry(poses, RenderTypes.text(HeartSprites.ATLAS), frame);
         poses.popPose();
     }
 }

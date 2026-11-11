@@ -14,14 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class HeartSettingsScreenTest {
-    @Test void actualScreenHasOnlyThreeTogglesAndTwoSlidersWithNoFooterButtons() {
+    @Test void actualScreenHasThreeTogglesTwoSlidersAndAnEntitiesButton() {
         Minecraft minecraft = mock(Minecraft.class);
         HeartSettingsScreen screen = new HeartSettingsScreen(minecraft, null, new HeartConfig(), config -> true);
         screen.width = 320;
         screen.height = 240;
         screen.init();
-        assertEquals(5, screen.children().size());
-        assertEquals(3, screen.children().stream().filter(Button.class::isInstance).count());
+        assertEquals(6, screen.children().size());
+        assertEquals(4, screen.children().stream().filter(Button.class::isInstance).count());
         assertEquals(2, screen.children().stream().filter(SettingSlider.class::isInstance).count());
         assertEquals(0, screen.children().stream().filter(Button.class::isInstance)
                 .map(Button.class::cast).filter(button -> {

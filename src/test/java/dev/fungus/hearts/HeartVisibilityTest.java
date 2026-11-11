@@ -18,7 +18,7 @@ class HeartVisibilityTest {
         assertFalse(visible(true, false, true, false, true, false, 1, false, false, true, true));
         assertFalse(visible(true, false, false, true, true, false, 1, false, false, true, true));
         assertFalse(visible(true, false, false, false, false, false, 1, false, false, true, true));
-        assertFalse(visible(true, false, false, false, true, true, 1, false, false, true, true));
+        assertTrue(visible(true, false, false, false, true, true, 1, false, false, true, true));
         assertFalse(visible(true, false, false, false, true, false, 1, false, false, true, false));
     }
 

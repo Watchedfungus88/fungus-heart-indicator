@@ -1,5 +1,5 @@
 package dev.fungus.hearts;
 
-public interface PlayerHistory {
+public interface EntityHistory {
     HealthHistory fungus$history();
 }

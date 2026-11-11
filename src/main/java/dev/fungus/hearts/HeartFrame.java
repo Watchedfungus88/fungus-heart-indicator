@@ -10,11 +10,20 @@ public final class HeartFrame implements SubmitNodeCollector.CustomGeometryRende
     private final int regenerationIndex, jitterSeed;
     private final boolean animations, flashing;
     private final float scale;
+    private final int color;
     private final HeartSprites.Palette sprites;
 
     public HeartFrame(float health, float maximum, float absorption, float previous, long tick,
                       boolean flashing, HeartStyle style, boolean regeneration, boolean hardcore,
                       boolean animations, float scale, HeartSprites.Palette sprites) {
+        this(health, maximum, absorption, previous, tick, flashing, style, regeneration, hardcore,
+                animations, scale, sprites, -1);
+    }
+
+    public HeartFrame(float health, float maximum, float absorption, float previous, long tick,
+                      boolean flashing, HeartStyle style, boolean regeneration, boolean hardcore,
+                      boolean animations, float scale, HeartSprites.Palette sprites, int color) {
+        this.color = color;
         maximum = Math.max(1, HeartLayout.finiteHealth(maximum));
         this.health = (int) Math.ceil(Math.min(maximum, HeartLayout.finiteHealth(health)));
         this.previous = (int) Math.ceil(Math.min(maximum, HeartLayout.finiteHealth(previous)));
@@ -40,6 +49,7 @@ public final class HeartFrame implements SubmitNodeCollector.CustomGeometryRende
     public int absorptionCount() { return absorptionCount; }
     public int count() { return normalCount + absorptionCount; }
     public float scale() { return scale; }
+    public int color() { return color; }
     public boolean flashing() { return flashing; }
 
     public int layer(int index, int layer) {
@@ -84,9 +94,8 @@ public final class HeartFrame implements SubmitNodeCollector.CustomGeometryRende
         vertex(pose, vertices, x + 9, y, u1, v0);
     }
 
-    private static void vertex(PoseStack.Pose pose, VertexConsumer vertices,
-                               float x, float y, float u, float v) {
-
-        vertices.addVertex(pose, x, y, 0).setColor(-1).setUv(u, v).setLight(0xF000F0);
+    private void vertex(PoseStack.Pose pose, VertexConsumer vertices,
+                        float x, float y, float u, float v) {
+        vertices.addVertex(pose, x, y, 0).setColor(color).setUv(u, v).setLight(0xF000F0);
     }
 }

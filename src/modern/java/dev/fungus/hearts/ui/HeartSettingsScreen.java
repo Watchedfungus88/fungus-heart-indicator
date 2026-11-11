@@ -38,7 +38,7 @@ public final class HeartSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        top = Math.max(64, (height - 116) / 2);
+        top = Math.max(64, (height - 140) / 2);
         int left = width / 2 - 130;
         toggle(left, top, "enabled", draft.enabled, button -> {
             draft.enabled = !draft.enabled;
@@ -65,6 +65,10 @@ public final class HeartSettingsScreen extends Screen {
                 SliderValues.SIZE_STEPS, SliderValues.sizeStep(draft.scale),
                 step -> text("size", Math.round(SliderValues.size(step) * 100)),
                 step -> { draft.scale = SliderValues.size(step); changed(); }));
+        addRenderableWidget(Button.builder(text("entities"), button -> {
+            if (autosave.flush()) minecraft.setScreenAndShow(
+                    new EntitySettingsScreen(minecraft, this, draft, autosave));
+        }).bounds(left, top + 120, 260, 20).build());
     }
 
     private static long now() { return System.nanoTime() / 1_000_000; }
@@ -104,7 +108,7 @@ public final class HeartSettingsScreen extends Screen {
         }
         graphics.pose().popMatrix();
         graphics.centeredText(font, text(autosave.failed() ? "save_failed" : "auto_saved"),
-                width / 2, top + 128, autosave.failed() ? 0xFFFF7777 : 0xFFAAAAAA);
+                width / 2, top + 152, autosave.failed() ? 0xFFFF7777 : 0xFFAAAAAA);
     }
 
     @Override public void onClose() {

@@ -2,6 +2,6 @@
   "required": true,
   "package": "dev.fungus.hearts.mixin",
   "compatibilityLevel": "${mixinJava}",
-  "client": ["ClientPlayerMixin", "AvatarStateMixin", "EntityRendererMixin"],
+  "client": ["LivingEntityMixin", "EntityStateMixin", "EntityRendererMixin"],
   "injectors": { "defaultRequire": 1 }
 }
