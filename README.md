@@ -44,3 +44,13 @@ Targets: `26.3`, `26.2`, `26.1`, `1.21.11`. The installable JAR is in
 
 Every target runs the headless tests. For the optional CPU benchmark, run
 `./gradlew benchmarkHearts -Pminecraft_version=26.3`.
+
+### Source layout
+
+- `src/main/java` and `src/main/resources`: shared mod code and resources.
+- `src/main/modern/java` and `src/main/legacy/java`: compatibility code.
+- `src/main/<version>/java`: version-specific adapters.
+- `src/test/java`: shared tests and benchmark helpers.
+- `src/test/<version>/java`: version-specific tests and helpers.
+
+Tests and test dependencies are not included in the installable JARs.

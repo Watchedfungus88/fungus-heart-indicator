@@ -5,10 +5,10 @@ plugins {
 
 def target = providers.gradleProperty('minecraft_version').getOrElse('26.2')
 def targets = [
-        '26.3': [menu: '21.0.0', java: 25, platform: '26.3'],
-        '26.2': [menu: '20.0.3', java: 25, platform: 'modern-platform'],
-        '26.1': [menu: '18.0.2', java: 25, platform: '26.1'],
-        '1.21.11': [menu: '17.0.1', java: 21, platform: 'legacy']
+        '26.3': [menu: '21.0.0', java: 25],
+        '26.2': [menu: '20.0.3', java: 25],
+        '26.1': [menu: '18.0.2', java: 25],
+        '1.21.11': [menu: '17.0.1', java: 21]
 ]
 if (!targets.containsKey(target)) throw new GradleException("Unsupported Minecraft version: $target")
 def settings = targets[target]
@@ -43,8 +43,8 @@ dependencies {
 }
 
 sourceSets {
-    main.java.srcDirs += ["src/${legacy ? 'legacy' : 'modern'}/java", "src/${settings.platform}/java"].unique()
-    test.java.srcDir "src/$target/test"
+    main.java.srcDirs += ["src/main/${legacy ? 'legacy' : 'modern'}/java", "src/main/$target/java"]
+    test.java.srcDir "src/test/$target/java"
 }
 
 java {
