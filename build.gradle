@@ -16,7 +16,7 @@ def legacy = target == '1.21.11'
 apply plugin: legacy ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
 
 group = 'dev.fungus'
-version = "1.4.0+$target"
+version = "1.4.1+$target"
 base { archivesName = 'fungus-heart-indicator' }
 layout.buildDirectory = layout.projectDirectory.dir("build/$target")
 

@@ -41,7 +41,7 @@ public abstract class EntitySelectionScreen extends Screen {
         listWidth = Math.min(360, width - 40);
         left = (width - listWidth) / 2;
         listTop = 66;
-        int rowCount = Math.clamp((height - 136) / 24, 1, 12);
+        int rowCount = Math.clamp((height - 140) / 24, 1, 12);
         listBottom = listTop + rowCount * 24;
         selection.pageSize(rowCount);
         search = addRenderableWidget(new EditBox(font, left, 38, listWidth, 20, text("entity_search")));
@@ -58,15 +58,15 @@ public abstract class EntitySelectionScreen extends Screen {
             rows.add(addRenderableWidget(Button.builder(CommonComponents.EMPTY, button -> toggle(row))
                     .bounds(left, listTop + i * 24, listWidth, 20).build()));
         }
-        int footer = height - 58;
-        addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> onClose())
-                .bounds(left, footer, 80, 20).build());
+        int footer = height - 70;
         previous = addRenderableWidget(Button.builder(Component.literal("<"), button -> changePage(-1))
-                .bounds(left + listWidth - 150, footer, 30, 20).build());
+                .bounds(width / 2 - 75, footer, 30, 20).build());
         previous.setTooltip(Tooltip.create(text("previous_page")));
         next = addRenderableWidget(Button.builder(Component.literal(">"), button -> changePage(1))
-                .bounds(left + listWidth - 30, footer, 30, 20).build());
+                .bounds(width / 2 + 45, footer, 30, 20).build());
         next.setTooltip(Tooltip.create(text("next_page")));
+        addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> onClose())
+                .bounds(width / 2 - 100, height - 40, 200, 20).build());
         refreshRows();
     }
 
@@ -121,9 +121,8 @@ public abstract class EntitySelectionScreen extends Screen {
     }
 
     protected Component pageLabel() { return Component.literal((selection.page() + 1) + " / " + selection.pages()); }
-    protected int pageLabelX() { return left + listWidth - 75; }
+    protected int pageLabelX() { return width / 2; }
     protected boolean noMatches() { return selection.matches() == 0; }
-    protected Component saveLabel() { return text(autosave.failed() ? "save_failed" : "auto_saved"); }
-    protected int saveColor() { return autosave.failed() ? 0xFFFF7777 : 0xFFAAAAAA; }
+    protected boolean saveFailed() { return autosave.failed(); }
     private static long now() { return System.nanoTime() / 1_000_000; }
 }

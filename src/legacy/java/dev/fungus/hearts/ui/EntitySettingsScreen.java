@@ -20,9 +20,8 @@ public final class EntitySettingsScreen extends EntitySelectionScreen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         graphics.drawCenteredString(font, title, width / 2, 16, 0xFFFFFFFF);
-        graphics.drawCenteredString(font, text("entity_hint"), width / 2, height - 78, 0xFFAAAAAA);
         if (noMatches()) graphics.drawCenteredString(font, text("no_entities"), width / 2, 80, 0xFFAAAAAA);
-        graphics.drawCenteredString(font, pageLabel(), pageLabelX(), height - 52, 0xFFFFFFFF);
-        graphics.drawCenteredString(font, saveLabel(), width / 2, height - 26, saveColor());
+        graphics.drawCenteredString(font, pageLabel(), pageLabelX(), height - 64, 0xFFFFFFFF);
+        if (saveFailed()) graphics.drawCenteredString(font, text("save_failed"), width / 2, height - 14, 0xFFFF7777);
     }
 }

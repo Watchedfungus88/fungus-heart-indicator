@@ -60,6 +60,38 @@ class EntitySettingsScreenTest {
 
     private void press(Button button) { button.onPress(new KeyEvent(InputConstants.KEY_RETURN, 0, 0)); }
 
+    private Button button(EntitySettingsScreen screen, net.minecraft.network.chat.Component label) {
+        return screen.children().stream().filter(Button.class::isInstance).map(Button.class::cast)
+                .filter(button -> button.getMessage().getString().equals(label.getString())).findFirst().orElseThrow();
+    }
+
+    @Test void paginationIsCenteredWithBackBelowAndNoOverlappingRowsAfterResize() throws Exception {
+        Minecraft client = client();
+        HeartConfig draft = new HeartConfig();
+        EntitySettingsScreen screen = screen(client, draft, new SettingsAutosave(draft, config -> true), choices(100));
+        for (int width : new int[] {320, 321, 854}) {
+            for (int height : new int[] {240, 241, 255, 256, 259, 260, 300, 360, 480}) {
+                screen.resize(width, height);
+                Button previous = button(screen, net.minecraft.network.chat.Component.literal("<"));
+                Button next = button(screen, net.minecraft.network.chat.Component.literal(">"));
+                Button back = button(screen, net.minecraft.network.chat.CommonComponents.GUI_BACK);
+                int center = width / 2;
+                assertEquals(center, screen.pageLabelX());
+                assertEquals(2 * center, previous.getX() + next.getX() + next.getWidth());
+                assertEquals(previous.getY(), next.getY());
+                assertEquals(center, back.getX() + back.getWidth() / 2);
+                assertTrue(back.getY() >= next.getY() + next.getHeight() + 8);
+                assertTrue(back.getY() + back.getHeight() <= height - 20);
+                for (var child : screen.children()) {
+                    if (child instanceof Button row && row != previous && row != next && row != back) {
+                        assertTrue(row.getY() + row.getHeight() <= previous.getY() - 8,
+                                width + "x" + height);
+                    }
+                }
+            }
+        }
+    }
+
     @Test void realSearchFiltersRowsAndTogglesIndividualTypesThenEscapeSaves() throws Exception {
         Minecraft client = client();
         HeartConfig draft = new HeartConfig();
@@ -93,7 +125,7 @@ class EntitySettingsScreenTest {
         assertTrue(draft.entityEnabled("example:mob_2"));
         assertTrue(screen.mouseScrolled(160, 80, 0, 1));
         assertTrue(row(screen, 0).getMessage().getString().startsWith("Player:"));
-        Button next = (Button) screen.children().getLast();
+        Button next = button(screen, net.minecraft.network.chat.Component.literal(">"));
         press(next);
         assertTrue(row(screen, 0).getMessage().getString().startsWith("Mob 2:"));
         ((EditBox) screen.children().getFirst()).setValue("does not exist");
@@ -117,12 +149,16 @@ class EntitySettingsScreenTest {
         AtomicInteger attempts = new AtomicInteger();
         SettingsAutosave autosave = new SettingsAutosave(draft, config -> attempts.incrementAndGet() > 1);
         EntitySettingsScreen screen = screen(client, draft, autosave, choices(0));
+        assertFalse(screen.saveFailed());
         press(row(screen, 0));
         assertFalse(draft.entityEnabled("minecraft:player"));
-        screen.onClose();
+        Button back = button(screen, net.minecraft.network.chat.CommonComponents.GUI_BACK);
+        press(back);
         verify(client, never()).setScreenAndShow(any());
         assertTrue(autosave.failed());
-        screen.onClose();
+        assertTrue(screen.saveFailed());
+        press(back);
+        assertFalse(screen.saveFailed());
         assertFalse(draft.entityEnabled("minecraft:player"));
         verify(client).setScreenAndShow(null);
         assertEquals(2, attempts.get());

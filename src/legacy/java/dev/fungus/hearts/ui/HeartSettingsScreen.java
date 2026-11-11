@@ -107,8 +107,7 @@ public final class HeartSettingsScreen extends Screen {
             }
         }
         graphics.pose().popMatrix();
-        graphics.drawCenteredString(font, text(autosave.failed() ? "save_failed" : "auto_saved"),
-                width / 2, top + 152, autosave.failed() ? 0xFFFF7777 : 0xFFAAAAAA);
+        if (autosave.failed()) graphics.drawCenteredString(font, text("save_failed"), width / 2, top + 152, 0xFFFF7777);
     }
 
     @Override public void onClose() {
