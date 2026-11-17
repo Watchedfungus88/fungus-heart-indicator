@@ -17,21 +17,29 @@ public final class HeartFrame implements SubmitNodeCollector.CustomGeometryRende
                       boolean flashing, HeartStyle style, boolean regeneration, boolean hardcore,
                       boolean animations, float scale, HeartSprites.Palette sprites) {
         this(health, maximum, absorption, previous, tick, flashing, style, regeneration, hardcore,
-                animations, scale, sprites, -1);
+                animations, scale, sprites, HeartConfig.UNLIMITED_HEARTS, HeartConfig.UNLIMITED_HEARTS, -1);
     }
 
     public HeartFrame(float health, float maximum, float absorption, float previous, long tick,
                       boolean flashing, HeartStyle style, boolean regeneration, boolean hardcore,
                       boolean animations, float scale, HeartSprites.Palette sprites, int color) {
+        this(health, maximum, absorption, previous, tick, flashing, style, regeneration, hardcore,
+                animations, scale, sprites, HeartConfig.UNLIMITED_HEARTS, HeartConfig.UNLIMITED_HEARTS, color);
+    }
+
+    public HeartFrame(float health, float maximum, float absorption, float previous, long tick,
+                      boolean flashing, HeartStyle style, boolean regeneration, boolean hardcore,
+                      boolean animations, float scale, HeartSprites.Palette sprites,
+                      int normalLimit, int absorptionLimit, int color) {
         this.color = color;
         maximum = Math.max(1, HeartLayout.finiteHealth(maximum));
         this.health = (int) Math.ceil(Math.min(maximum, HeartLayout.finiteHealth(health)));
         this.previous = (int) Math.ceil(Math.min(maximum, HeartLayout.finiteHealth(previous)));
         this.absorption = (int) Math.ceil(HeartLayout.finiteHealth(absorption));
-        normalUnits = (int) HeartLayout.units(maximum, HeartLayout.MAX_NORMAL);
-        absorptionUnits = (int) HeartLayout.units(this.absorption, HeartLayout.MAX_ABSORPTION);
-        normalCount = HeartLayout.count(maximum, HeartLayout.MAX_NORMAL);
-        absorptionCount = HeartLayout.count(this.absorption, HeartLayout.MAX_ABSORPTION);
+        normalUnits = (int) HeartLayout.units(maximum, normalLimit);
+        absorptionUnits = (int) HeartLayout.units(this.absorption, absorptionLimit);
+        normalCount = HeartLayout.count(maximum, normalLimit);
+        absorptionCount = HeartLayout.count(this.absorption, absorptionLimit);
         normalBase = style.slot(hardcore, false, false);
 
         absorptionBase = (style == HeartStyle.WITHERED ? style : HeartStyle.ABSORBING)

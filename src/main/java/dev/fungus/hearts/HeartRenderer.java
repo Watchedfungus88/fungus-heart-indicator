@@ -49,7 +49,8 @@ public final class HeartRenderer {
                 HeartLayout.finiteHealth(living.getAbsorptionAmount()), history.previous(),
                 living.tickCount, history.flashing(time), style, living.hasEffect(MobEffects.REGENERATION),
                 living instanceof AbstractClientPlayer && living.level().getLevelData().isHardcore(),
-                config.animations, config.scale, sprites.get(),
+                config.animations, config.scale, sprites.get(), config.normalHeartLimit,
+                config.absorptionHeartLimit,
                 living.isDiscrete() ? HeartPlatform.sneakingColor(client) : -1));
     }
 

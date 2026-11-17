@@ -38,37 +38,47 @@ public final class HeartSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        top = Math.max(64, (height - 140) / 2);
+        top = Math.max(52, (height - 180) / 2);
         int left = width / 2 - 130;
         toggle(left, top, "enabled", draft.enabled, button -> {
             draft.enabled = !draft.enabled;
             button.setMessage(label("enabled", draft.enabled));
             changed();
         });
-        toggle(left, top + 24, "animations", draft.animations, button -> {
+        toggle(left, top + 22, "animations", draft.animations, button -> {
             draft.animations = !draft.animations;
             button.setMessage(label("animations", draft.animations));
             changed();
         });
-        toggle(left, top + 48, "self", draft.showSelf, button -> {
+        toggle(left, top + 44, "self", draft.showSelf, button -> {
             draft.showSelf = !draft.showSelf;
             button.setMessage(label("self", draft.showSelf));
             changed();
         }).setTooltip(Tooltip.create(text("self_tip")));
-        SettingSlider distance = addRenderableWidget(new SettingSlider(left, top + 72, 260,
+        SettingSlider distance = addRenderableWidget(new SettingSlider(left, top + 66, 260,
                 SliderValues.DISTANCE_STEPS, SliderValues.distanceStep(draft.distance),
                 step -> SliderValues.distance(step) == HeartConfig.UNLIMITED_DISTANCE
                         ? text("distance_unlimited") : text("distance", SliderValues.distance(step)),
                 step -> { draft.distance = SliderValues.distance(step); changed(); }));
         distance.setTooltip(Tooltip.create(text("distance_tip")));
-        addRenderableWidget(new SettingSlider(left, top + 96, 260,
+        addRenderableWidget(new SettingSlider(left, top + 88, 260,
+                SliderValues.HEART_LIMIT_STEPS, SliderValues.heartLimitStep(draft.normalHeartLimit),
+                step -> SliderValues.heartLimit(step) == HeartConfig.UNLIMITED_HEARTS
+                        ? text("normal_hearts_unlimited") : text("normal_hearts", SliderValues.heartLimit(step)),
+                step -> { draft.normalHeartLimit = SliderValues.heartLimit(step); changed(); }));
+        addRenderableWidget(new SettingSlider(left, top + 110, 260,
+                SliderValues.HEART_LIMIT_STEPS, SliderValues.heartLimitStep(draft.absorptionHeartLimit),
+                step -> SliderValues.heartLimit(step) == HeartConfig.UNLIMITED_HEARTS
+                        ? text("absorption_hearts_unlimited") : text("absorption_hearts", SliderValues.heartLimit(step)),
+                step -> { draft.absorptionHeartLimit = SliderValues.heartLimit(step); changed(); }));
+        addRenderableWidget(new SettingSlider(left, top + 132, 260,
                 SliderValues.SIZE_STEPS, SliderValues.sizeStep(draft.scale),
                 step -> text("size", Math.round(SliderValues.size(step) * 100)),
                 step -> { draft.scale = SliderValues.size(step); changed(); }));
         addRenderableWidget(Button.builder(text("entities"), button -> {
             if (autosave.flush()) minecraft.setScreenAndShow(
                     new EntitySettingsScreen(minecraft, this, draft, autosave));
-        }).bounds(left, top + 120, 260, 20).build());
+        }).bounds(left, top + 154, 260, 20).build());
     }
 
     private static long now() { return System.nanoTime() / 1_000_000; }
@@ -86,16 +96,16 @@ public final class HeartSettingsScreen extends Screen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        graphics.drawCenteredString(font, title, width / 2, top - 56, 0xFFFFFFFF);
+        graphics.drawCenteredString(font, title, width / 2, top - 44, 0xFFFFFFFF);
         long time = System.nanoTime() / 50_000_000L % 160;
         boolean damaged = time < 80;
         HeartFrame preview = new HeartFrame(damaged ? 13 : 17, 20, 4, damaged ? 20 : 13,
                 time, damaged && time % 80 < 20 && (20 - time % 80) / 3 % 2 == 1,
                 HeartStyle.NORMAL, !damaged, false, draft.animations, draft.scale,
-                HeartSprites.get());
+                HeartSprites.get(), draft.normalHeartLimit, draft.absorptionHeartLimit, -1);
         float scale = draft.scale;
         graphics.pose().pushMatrix();
-        graphics.pose().translate(width / 2.0f, top - 22);
+        graphics.pose().translate(width / 2.0f, top - 18);
         graphics.pose().scale(scale, scale);
         int count = preview.normalCount() + preview.absorptionCount();
         for (int i = count - 1; i >= 0; i--) {
@@ -107,7 +117,7 @@ public final class HeartSettingsScreen extends Screen {
             }
         }
         graphics.pose().popMatrix();
-        if (autosave.failed()) graphics.drawCenteredString(font, text("save_failed"), width / 2, top + 152, 0xFFFF7777);
+        if (autosave.failed()) graphics.drawCenteredString(font, text("save_failed"), width / 2, top + 178, 0xFFFF7777);
     }
 
     @Override public void onClose() {

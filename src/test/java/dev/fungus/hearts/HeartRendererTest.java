@@ -114,6 +114,37 @@ class HeartRendererTest {
         }
     }
 
+    @Test void rendererUsesSeparateConfiguredLimitsAndUnlimitedShowsEveryHalfHeart() throws Exception {
+        try (Fixture f = new Fixture()) {
+            LivingEntity cow = f.mob("cow");
+            f.config.setEntityEnabled("minecraft:cow", true);
+            when(cow.getMaxHealth()).thenReturn(1001f);
+            when(cow.getHealth()).thenReturn(1001f);
+            when(cow.getAbsorptionAmount()).thenReturn(301f);
+            f.extract(cow);
+            assertEquals(501, f.state.frame.normalCount());
+            assertEquals(151, f.state.frame.absorptionCount());
+            f.config.normalHeartLimit = 5;
+            f.config.absorptionHeartLimit = 3;
+            f.extract(cow);
+            assertEquals(5, f.state.frame.normalCount());
+            assertEquals(3, f.state.frame.absorptionCount());
+            f.config.normalHeartLimit = HeartConfig.UNLIMITED_HEARTS;
+            f.extract(cow);
+            assertEquals(501, f.state.frame.normalCount());
+            assertEquals(3, f.state.frame.absorptionCount());
+            f.config.normalHeartLimit = 5;
+            f.config.absorptionHeartLimit = HeartConfig.UNLIMITED_HEARTS;
+            f.extract(cow);
+            assertEquals(5, f.state.frame.normalCount());
+            assertEquals(151, f.state.frame.absorptionCount());
+            f.config.normalHeartLimit = HeartConfig.UNLIMITED_HEARTS;
+            f.extract(cow);
+            assertEquals(501, f.state.frame.normalCount());
+            assertEquals(151, f.state.frame.absorptionCount());
+        }
+    }
+
     @Test void sneakingPlayersUseTheSliderBeyond32BlocksAndKeepRendererVisibilityPolicy() throws Exception {
         try (Fixture f = new Fixture()) {
             AbstractClientPlayer player = f.player();

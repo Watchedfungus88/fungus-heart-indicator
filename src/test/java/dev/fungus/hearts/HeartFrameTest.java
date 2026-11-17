@@ -25,6 +25,18 @@ class HeartFrameTest {
                 regeneration, hardcore, animations, 1, PALETTE);
     }
 
+    @Test void defaultFramesShowEveryHeartBeyondBothOldAndSliderCaps() {
+        HeartFrame frame = frame(1001, 1001, 301, 1001, 0, true, HeartStyle.NORMAL, false, false, true);
+        assertEquals(501, frame.normalCount());
+        assertEquals(151, frame.absorptionCount());
+        assertEquals(HeartStyle.NORMAL.slot(false, true, false), frame.layer(500, 2));
+        assertEquals(HeartStyle.ABSORBING.slot(false, true, false), frame.layer(651, 2));
+        CountingVertices output = new CountingVertices();
+        frame.render(new PoseStack().last(), output);
+        assertEquals(501 * 12 + 151 * 8, output.vertices);
+        assertTrue(output.validUvs && output.finitePositions);
+    }
+
     @Test void damageUsesActualBlinkingSpritesUnderTheCurrentHalfHeart() {
         HeartFrame frame = frame(13, 20, 0, 20, 100, true, HeartStyle.NORMAL, false, false, true);
         assertEquals("hud/heart/container_blinking", HeartSprites.id(frame.layer(6, 0)).getPath());
@@ -72,15 +84,15 @@ class HeartFrameTest {
         assertEquals("hud/heart/absorbing_hardcore_half", HeartSprites.id(poisoned.layer(11, 2)).getPath());
     }
 
-    @Test void headlessDrawCallbackCoversAllStatesAndTheTrueWorstCase() {
+    @Test void finiteLimitsPreserveCompressedHeartsAndBoundDrawing() {
         for (HeartStyle style : new HeartStyle[] {HeartStyle.NORMAL, HeartStyle.POISONED,
                 HeartStyle.WITHERED, HeartStyle.FROZEN}) {
             for (boolean hardcore : new boolean[] {false, true}) {
                 for (boolean blink : new boolean[] {false, true}) {
                     for (float health : new float[] {0.1f, 1, 13, 19, 20, 40, 41, 1024, 1_000_000}) {
                         float maximum = Math.max(20, health);
-                        HeartFrame frame = frame(health, maximum, 1_000_000, maximum, 3,
-                                blink, style, true, hardcore, true);
+                        HeartFrame frame = new HeartFrame(health, maximum, 1_000_000, maximum, 3,
+                                blink, style, true, hardcore, true, 1, PALETTE, 20, 10, -1);
                         CountingVertices output = new CountingVertices();
                         frame.render(new PoseStack().last(), output);
                         int expected = 0;
@@ -97,8 +109,8 @@ class HeartFrameTest {
                 }
             }
         }
-        HeartFrame worst = frame(1_000_000, 1_000_000, 1_000_000, 1_000_000,
-                3, true, HeartStyle.FROZEN, true, true, true);
+        HeartFrame worst = new HeartFrame(1_000_000, 1_000_000, 1_000_000, 1_000_000,
+                3, true, HeartStyle.FROZEN, true, true, true, 1, PALETTE, 20, 10, -1);
         CountingVertices output = new CountingVertices();
         worst.render(new PoseStack().last(), output);
         assertEquals(320, output.vertices);

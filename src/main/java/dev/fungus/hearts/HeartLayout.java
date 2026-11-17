@@ -2,8 +2,6 @@ package dev.fungus.hearts;
 
 public final class HeartLayout {
     public static final int PER_ROW = 10;
-    public static final int MAX_NORMAL = 20;
-    public static final int MAX_ABSORPTION = 10;
 
     private HeartLayout() {}
 
@@ -12,10 +10,12 @@ public final class HeartLayout {
     }
 
     public static float units(float maximum, int limit) {
+        if (limit == HeartConfig.UNLIMITED_HEARTS) return 2;
         return Math.max(2, (float) Math.ceil(finiteHealth(maximum) / (limit * 2)) * 2);
     }
 
     public static int count(float maximum, int limit) {
+        if (limit == HeartConfig.UNLIMITED_HEARTS) return (int) Math.ceil(finiteHealth(maximum) / 2);
         return Math.min(limit, (int) Math.ceil(finiteHealth(maximum) / units(maximum, limit)));
     }
 

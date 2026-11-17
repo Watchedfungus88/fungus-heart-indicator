@@ -16,7 +16,7 @@ def legacy = target == '1.21.11'
 apply plugin: legacy ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
 
 group = 'dev.fungus'
-version = "1.4.1+$target"
+version = "1.5.0+$target"
 base { archivesName = 'fungus-heart-indicator' }
 layout.buildDirectory = layout.projectDirectory.dir("build/$target")
 
@@ -68,7 +68,7 @@ test {
 }
 jar { from('LICENSE') }
 
-['standard', 'extreme'].each { mode ->
+['standard', 'extreme', 'unlimited', 'unlimitedStress'].each { mode ->
     tasks.register("benchmarkHearts${mode.capitalize()}", JavaExec) {
         dependsOn testClasses
         classpath = sourceSets.test.runtimeClasspath
@@ -79,6 +79,8 @@ jar { from('LICENSE') }
     }
 }
 tasks.named('benchmarkHeartsExtreme') { mustRunAfter 'benchmarkHeartsStandard' }
+tasks.named('benchmarkHeartsUnlimited') { mustRunAfter 'benchmarkHeartsExtreme' }
+tasks.named('benchmarkHeartsUnlimitedStress') { mustRunAfter 'benchmarkHeartsUnlimited' }
 tasks.register('benchmarkHearts') {
-    dependsOn 'benchmarkHeartsStandard', 'benchmarkHeartsExtreme'
+    dependsOn 'benchmarkHeartsStandard', 'benchmarkHeartsExtreme', 'benchmarkHeartsUnlimited', 'benchmarkHeartsUnlimitedStress'
 }

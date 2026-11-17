@@ -14,15 +14,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class HeartSettingsScreenTest {
-    @Test void actualScreenHasThreeTogglesTwoSlidersAndAnEntitiesButton() {
+    @Test void actualScreenHasThreeTogglesFourSlidersAndAnEntitiesButton() {
         Minecraft minecraft = mock(Minecraft.class);
         HeartSettingsScreen screen = new HeartSettingsScreen(minecraft, null, new HeartConfig(), config -> true);
         screen.width = 320;
         screen.height = 240;
         screen.init();
-        assertEquals(6, screen.children().size());
+        assertEquals(8, screen.children().size());
         assertEquals(4, screen.children().stream().filter(Button.class::isInstance).count());
-        assertEquals(2, screen.children().stream().filter(SettingSlider.class::isInstance).count());
+        assertEquals(4, screen.children().stream().filter(SettingSlider.class::isInstance).count());
         assertEquals(0, screen.children().stream().filter(Button.class::isInstance)
                 .map(Button.class::cast).filter(button -> {
                     String label = button.getMessage().getString();
@@ -47,10 +47,75 @@ class HeartSettingsScreenTest {
         distance.onClick(new MouseButtonEvent(distance.getX() + 256, distance.getY() + 5,
                 new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0)), false);
         assertEquals(0, draft.distance);
+        assertEquals(HeartConfig.UNLIMITED_HEARTS, draft.normalHeartLimit);
+        assertEquals(HeartConfig.UNLIMITED_HEARTS, draft.absorptionHeartLimit);
         assertTrue(screen.keyPressed(new KeyEvent(InputConstants.KEY_ESCAPE, 0, 0)));
         screen.removed();
         assertEquals(1, writes.get());
         verify(minecraft).setScreenAndShow(parent);
+    }
+
+    @Test void normalAndAbsorptionHeartSlidersDefaultToUnlimitedAndCanBeLimited() {
+        Minecraft minecraft = mock(Minecraft.class);
+        HeartConfig draft = new HeartConfig();
+        AtomicInteger writes = new AtomicInteger();
+        HeartSettingsScreen screen = new HeartSettingsScreen(minecraft, null, draft, config -> {
+            assertEquals(37, config.normalHeartLimit);
+            assertEquals(8, config.absorptionHeartLimit);
+            writes.incrementAndGet();
+            return true;
+        });
+        screen.width = 320;
+        screen.height = 240;
+        screen.init();
+        SettingSlider normal = (SettingSlider) screen.children().get(4);
+        SettingSlider absorption = (SettingSlider) screen.children().get(5);
+        assertEquals(net.minecraft.network.chat.Component.translatable("fungus_hearts.normal_hearts_unlimited"),
+                normal.getMessage());
+        assertEquals(net.minecraft.network.chat.Component.translatable("fungus_hearts.absorption_hearts_unlimited"),
+                absorption.getMessage());
+        assertEquals(HeartConfig.UNLIMITED_HEARTS, draft.normalHeartLimit);
+        assertEquals(HeartConfig.UNLIMITED_HEARTS, draft.absorptionHeartLimit);
+        click(normal, 0);
+        assertEquals(HeartConfig.MIN_HEART_LIMIT, draft.normalHeartLimit);
+        assertEquals(HeartConfig.UNLIMITED_HEARTS, draft.absorptionHeartLimit);
+        click(normal, 99);
+        assertEquals(100, draft.normalHeartLimit);
+        click(absorption, 99);
+        assertEquals(100, draft.absorptionHeartLimit);
+        click(normal, 100);
+        click(absorption, 100);
+        assertEquals(HeartConfig.UNLIMITED_HEARTS, draft.normalHeartLimit);
+        assertEquals(HeartConfig.UNLIMITED_HEARTS, draft.absorptionHeartLimit);
+        click(normal, 36);
+        click(absorption, 7);
+        screen.keyPressed(new KeyEvent(InputConstants.KEY_ESCAPE, 0, 0));
+        screen.removed();
+        assertEquals(1, writes.get());
+    }
+
+    private void click(SettingSlider slider, int step) {
+        slider.onClick(new MouseButtonEvent(slider.getX() + 4 + (slider.getWidth() - 8) * step / 100.0,
+                slider.getY() + 5, new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0)), false);
+    }
+
+    @Test void addedSlidersFitWithoutOverlapAtMinimumGuiSizeAndAfterResize() {
+        Minecraft minecraft = mock(Minecraft.class);
+        when(minecraft.getLastInputType()).thenReturn(net.minecraft.client.InputType.MOUSE);
+        HeartSettingsScreen screen = new HeartSettingsScreen(minecraft, null, new HeartConfig(), config -> true);
+        for (int width : new int[] {320, 321, 854}) {
+            for (int height : new int[] {240, 241, 256, 300, 480}) {
+                screen.resize(width, height);
+                int previousBottom = 0;
+                for (var child : screen.children()) {
+                    var widget = (net.minecraft.client.gui.components.AbstractWidget) child;
+                    assertTrue(widget.getY() >= previousBottom + 2);
+                    assertTrue(widget.getY() + widget.getHeight() <= height - 12);
+                    assertTrue(widget.getX() >= 0 && widget.getX() + widget.getWidth() <= width);
+                    previousBottom = widget.getY() + widget.getHeight();
+                }
+            }
+        }
     }
 
     @Test void togglesAlsoSaveWithoutAnyDoneButton() {

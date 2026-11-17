@@ -26,6 +26,12 @@ class HeartLayoutTest {
         assertEquals(0, HeartLayout.count(-10, 20));
     }
 
+    @Test void unlimitedLimitsRenderEveryHalfHeart() {
+        assertEquals(50, HeartLayout.count(100, HeartConfig.UNLIMITED_HEARTS));
+        assertEquals(10, HeartLayout.count(20, HeartConfig.UNLIMITED_HEARTS));
+        assertEquals(2, HeartLayout.units(100, HeartConfig.UNLIMITED_HEARTS));
+    }
+
     @Test void eachRowIsCenteredIndependently() {
         assertEquals(-40.5f, HeartLayout.x(0, 12));
         assertEquals(31.5f, HeartLayout.x(9, 12));
