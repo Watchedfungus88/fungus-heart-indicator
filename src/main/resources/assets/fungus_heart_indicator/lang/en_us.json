@@ -2,6 +2,7 @@
   "fungus_hearts.title": "Fungus's Heart Indicator",
   "fungus_hearts.enabled": "Heart indicator",
   "fungus_hearts.animations": "Animations",
+  "fungus_hearts.animations_tip": "Use vanilla-style damage, healing, regeneration, and low-health animations.",
   "fungus_hearts.self": "Show own hearts",
   "fungus_hearts.self_tip": "Third-person only. Hidden while invisible or spectating. Players must be enabled in Entities.",
   "fungus_hearts.distance": "Render distance: %s blocks",
@@ -11,11 +12,15 @@
   "fungus_hearts.normal_hearts_unlimited": "Normal hearts: Unlimited",
   "fungus_hearts.absorption_hearts": "Absorption hearts: %s",
   "fungus_hearts.absorption_hearts_unlimited": "Absorption hearts: Unlimited",
+  "fungus_hearts.heart_limit_tip": "Choose how many heart icons each health pool can use. Unlimited shows every half-heart.",
   "fungus_hearts.size": "Heart size: %s%%",
+  "fungus_hearts.size_tip": "Scale the heart icons from 50% to 150%.",
   "fungus_hearts.save_failed": "Could not save. Check the log; Esc to retry.",
   "fungus_hearts.entities": "Entities…",
   "fungus_hearts.entity_search": "Search entities by name or ID",
   "fungus_hearts.no_entities": "No matching entities",
   "fungus_hearts.previous_page": "Previous page",
-  "fungus_hearts.next_page": "Next page"
+  "fungus_hearts.next_page": "Next page",
+  "key.fungus_heart_indicator.settings": "Open Heart Indicator settings",
+  "key.category.minecraft.fungus_heart_indicator": "Fungus's Heart Indicator"
 }

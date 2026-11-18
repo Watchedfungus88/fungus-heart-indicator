@@ -27,11 +27,16 @@ public final class HeartSprites {
 
     public static final class Cache {
         private Palette palette;
+        private float anchorU0, anchorV0, anchorU1, anchorV1;
 
         public Palette get(IntFunction<TextureAtlasSprite> getter) {
             TextureAtlasSprite anchor = getter.apply(0);
+            float u0 = anchor.getU0(), v0 = anchor.getV0();
+            float u1 = anchor.getU1(), v1 = anchor.getV1();
 
-            if (palette == null || palette.anchor != anchor) {
+            // the anchor changes when the atlas is rebuilt
+            if (palette == null || palette.anchor != anchor
+                    || anchorU0 != u0 || anchorV0 != v0 || anchorU1 != u1 || anchorV1 != v1) {
                 float[] coordinates = new float[IDS.length * 4];
                 for (int i = 0; i < IDS.length; i++) {
                     TextureAtlasSprite sprite = i == 0 ? anchor : getter.apply(i);
@@ -41,6 +46,10 @@ public final class HeartSprites {
                     coordinates[i * 4 + 3] = sprite.getV1();
                 }
                 palette = new Palette(anchor, coordinates);
+                anchorU0 = u0;
+                anchorV0 = v0;
+                anchorU1 = u1;
+                anchorV1 = v1;
             }
             return palette;
         }

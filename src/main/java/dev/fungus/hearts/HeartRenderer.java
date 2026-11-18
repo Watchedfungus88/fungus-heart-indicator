@@ -38,16 +38,18 @@ public final class HeartRenderer {
                                 state.distanceToCameraSq, living.isDiscrete())))) return;
             } else if (!HeartEntityVisibility.allowed(living, client)) return;
         }
-        float max = Math.max(1, HeartLayout.finiteHealth(living.getMaxHealth()));
-        float health = Math.min(max, HeartLayout.finiteHealth(living.getHealth()));
+        float attributeMax = Math.max(1, HeartLayout.finiteHealth(living.getMaxHealth()));
+        float health = HeartLayout.finiteHealth(living.getHealth());
         double time = (double) living.tickCount + partialTick;
         HealthHistory history = ((EntityHistory) living).fungus$history();
-        history.update(health, max, time);
+        boolean flashing = history.flashing(time);
+        history.update(health, attributeMax, time, HeartPlatform.invulnerable(living));
+        float max = Math.max(attributeMax, Math.max(health, history.previous()));
         HeartStyle style = HeartStyle.forEffects(living.hasEffect(MobEffects.POISON),
                 living.hasEffect(MobEffects.WITHER), living.isFullyFrozen());
         target.fungus$setHearts(new HeartFrame(health, max,
                 HeartLayout.finiteHealth(living.getAbsorptionAmount()), history.previous(),
-                living.tickCount, history.flashing(time), style, living.hasEffect(MobEffects.REGENERATION),
+                living.tickCount, flashing, style, living.hasEffect(MobEffects.REGENERATION),
                 living instanceof AbstractClientPlayer && living.level().getLevelData().isHardcore(),
                 config.animations, config.scale, sprites.get(), config.normalHeartLimit,
                 config.absorptionHeartLimit,

@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.world.entity.LivingEntity;
 
 public final class HeartPlatform {
     private static final Material[] SPRITES = new Material[48];
@@ -23,6 +24,7 @@ public final class HeartPlatform {
     public static int sneakingColor(Minecraft client) { return 0x80FFFFFF; }
 
     public static boolean hidden(Minecraft client) { return client.options.hideGui; }
+    public static boolean invulnerable(LivingEntity entity) { return entity.invulnerableTime > 0; }
     public static double nameRange(AbstractClientPlayer player) {
         return 64;
     }

@@ -45,11 +45,12 @@ public final class HeartSettingsScreen extends Screen {
             button.setMessage(label("enabled", draft.enabled));
             changed();
         });
-        toggle(left, top + 22, "animations", draft.animations, button -> {
+        Button animations = toggle(left, top + 22, "animations", draft.animations, button -> {
             draft.animations = !draft.animations;
             button.setMessage(label("animations", draft.animations));
             changed();
         });
+        animations.setTooltip(Tooltip.create(text("animations_tip")));
         toggle(left, top + 44, "self", draft.showSelf, button -> {
             draft.showSelf = !draft.showSelf;
             button.setMessage(label("self", draft.showSelf));
@@ -61,20 +62,23 @@ public final class HeartSettingsScreen extends Screen {
                         ? text("distance_unlimited") : text("distance", SliderValues.distance(step)),
                 step -> { draft.distance = SliderValues.distance(step); changed(); }));
         distance.setTooltip(Tooltip.create(text("distance_tip")));
-        addRenderableWidget(new SettingSlider(left, top + 88, 260,
+        SettingSlider normalHearts = addRenderableWidget(new SettingSlider(left, top + 88, 260,
                 SliderValues.HEART_LIMIT_STEPS, SliderValues.heartLimitStep(draft.normalHeartLimit),
                 step -> SliderValues.heartLimit(step) == HeartConfig.UNLIMITED_HEARTS
                         ? text("normal_hearts_unlimited") : text("normal_hearts", SliderValues.heartLimit(step)),
                 step -> { draft.normalHeartLimit = SliderValues.heartLimit(step); changed(); }));
-        addRenderableWidget(new SettingSlider(left, top + 110, 260,
+        normalHearts.setTooltip(Tooltip.create(text("heart_limit_tip")));
+        SettingSlider absorptionHearts = addRenderableWidget(new SettingSlider(left, top + 110, 260,
                 SliderValues.HEART_LIMIT_STEPS, SliderValues.heartLimitStep(draft.absorptionHeartLimit),
                 step -> SliderValues.heartLimit(step) == HeartConfig.UNLIMITED_HEARTS
                         ? text("absorption_hearts_unlimited") : text("absorption_hearts", SliderValues.heartLimit(step)),
                 step -> { draft.absorptionHeartLimit = SliderValues.heartLimit(step); changed(); }));
-        addRenderableWidget(new SettingSlider(left, top + 132, 260,
+        absorptionHearts.setTooltip(Tooltip.create(text("heart_limit_tip")));
+        SettingSlider size = addRenderableWidget(new SettingSlider(left, top + 132, 260,
                 SliderValues.SIZE_STEPS, SliderValues.sizeStep(draft.scale),
                 step -> text("size", Math.round(SliderValues.size(step) * 100)),
                 step -> { draft.scale = SliderValues.size(step); changed(); }));
+        size.setTooltip(Tooltip.create(text("size_tip")));
         addRenderableWidget(Button.builder(text("entities"), button -> {
             if (autosave.flush()) minecraft.setScreenAndShow(
                     new EntitySettingsScreen(minecraft, this, draft, autosave));
@@ -110,7 +114,8 @@ public final class HeartSettingsScreen extends Screen {
         int count = preview.normalCount() + preview.absorptionCount();
         for (int i = count - 1; i >= 0; i--) {
             int x = Math.round(dev.fungus.hearts.HeartLayout.x(i, count));
-            int y = -i / 10 * 10 + Math.round(preview.offset(i));
+            int y = -i / dev.fungus.hearts.HeartLayout.PER_ROW * preview.rowHeight()
+                    + Math.round(preview.offset(i));
             for (int layer = 0; layer < 3; layer++) {
                 int sprite = preview.layer(i, layer);
                 if (sprite >= 0) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HeartSprites.id(sprite), x, y, 9, 9);

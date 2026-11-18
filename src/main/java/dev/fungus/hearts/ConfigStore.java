@@ -3,11 +3,13 @@ package dev.fungus.hearts;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 
 public final class ConfigStore {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -32,6 +34,10 @@ public final class ConfigStore {
         Path temporary = Files.createTempFile(path.toAbsolutePath().getParent(), "fungus-hearts-", ".tmp");
         try {
             Files.writeString(temporary, GSON.toJson(config.copy()) + "\n", StandardCharsets.UTF_8);
+            // force the temporary file before replacing the live config
+            try (FileChannel channel = FileChannel.open(temporary, StandardOpenOption.WRITE)) {
+                channel.force(true);
+            }
             try {
                 Files.move(temporary, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
             } catch (AtomicMoveNotSupportedException exception) {

@@ -68,6 +68,7 @@ public abstract class EntitySelectionScreen extends Screen {
         addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> onClose())
                 .bounds(width / 2 - 100, height - 40, 200, 20).build());
         refreshRows();
+        setInitialFocus(search);
     }
 
     private void toggle(int row) {

@@ -27,6 +27,9 @@ and choose the JAR that matches your Minecraft version. Requires Fabric Loader
 Put the JAR in your `mods` folder. Mod Menu is optional; install its dependencies
 if you use it. Changes save automatically. Press **Esc** to leave the settings.
 Use **Entities…** to enable or disable individual living entity types.
+Press **H** by default to open the settings, or rebind **Open Heart Indicator settings** in Minecraft's Controls screen.
+The settings use Minecraft's selected language automatically and fall back to English
+when a translation is unavailable.
 
 Unlimited removes the mod's distance cap, but Minecraft still needs to render
 and track the entity. Servers that hide health data may show inaccurate values.

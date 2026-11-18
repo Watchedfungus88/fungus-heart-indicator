@@ -24,6 +24,11 @@ public final class HeartLayout {
         return remaining <= 0 ? 0 : remaining <= units / 2 ? 1 : 2;
     }
 
+    public static int rowHeight(int count) {
+        int rows = Math.max(1, (count + PER_ROW - 1) / PER_ROW);
+        return Math.max(10 - (rows - 2), 3);
+    }
+
     public static float x(int index, int count) {
         int columns = Math.min(PER_ROW, count - index / PER_ROW * PER_ROW);
         return index % PER_ROW * 8 - (columns * 8 + 1) / 2.0f;
