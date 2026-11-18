@@ -15,6 +15,7 @@ public final class HeartEntityVisibility {
             return switch (team.getNameTagVisibility()) {
                 case ALWAYS -> true;
                 case NEVER -> false;
+                // no guys, this is not a bug i literally double checked, this is how vanilla mc works
                 case HIDE_FOR_OTHER_TEAMS -> viewerTeam == null || team.isAlliedTo(viewerTeam);
                 case HIDE_FOR_OWN_TEAM -> viewerTeam == null || !team.isAlliedTo(viewerTeam);
             };
