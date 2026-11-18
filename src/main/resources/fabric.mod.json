@@ -10,7 +10,7 @@
     "sources": "https://github.com/Watchedfungus88/fungus-heart-indicator",
     "issues": "https://github.com/Watchedfungus88/fungus-heart-indicator/issues"
   },
-  "license": "MIT",
+  "license": "LicenseRef-Fungus-Heart-Indicator",
   "environment": "client",
   "icon": "assets/fungus_heart_indicator/icon.png",
   "entrypoints": {
