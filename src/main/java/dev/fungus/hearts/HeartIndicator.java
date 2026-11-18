@@ -3,7 +3,6 @@ package dev.fungus.hearts;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.fungus.hearts.mixin.MinecraftAccess;
 import dev.fungus.hearts.ui.HeartSettingsScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -37,7 +36,7 @@ public final class HeartIndicator implements ClientModInitializer {
     public static void handleSettingsKey() {
         if (!OPEN_SETTINGS.consumeClick()) return;
         Minecraft client = Minecraft.getInstance();
-        if (client.player != null && ((MinecraftAccess) client).fungus$getScreen() == null) {
+        if (client.player != null && !HeartPlatform.hasScreen(client)) {
             client.setScreenAndShow(new HeartSettingsScreen(client, null));
         }
     }

@@ -18,13 +18,21 @@ import static org.mockito.Mockito.*;
 
 class VersionCompatibilityTest {
     @Test void mixinTargetsAndCallbackDescriptorsMatchThisMinecraftJar() throws Exception {
-        for (String name : List.of("LivingEntityMixin", "EntityStateMixin", "EntityRendererMixin")) {
+        for (String name : List.of("LivingEntityMixin", "EntityStateMixin", "EntityRendererMixin",
+                "MinecraftMixin", "OptionsMixin")) {
             ClassNode mixin = read("dev/fungus/hearts/mixin/" + name);
             AnnotationNode annotation = find(mixin.invisibleAnnotations, "Lorg/spongepowered/asm/mixin/Mixin;");
             assertNotNull(annotation, name);
             List<?> targets = (List<?>) value(annotation, "value");
             assertEquals(1, targets.size());
             ClassNode target = read(((Type) targets.getFirst()).getInternalName());
+            for (var field : mixin.fields) {
+                String shadow = "Lorg/spongepowered/asm/mixin/Shadow;";
+                if (find(field.visibleAnnotations, shadow) != null || find(field.invisibleAnnotations, shadow) != null) {
+                    assertTrue(target.fields.stream().anyMatch(f -> f.name.equals(field.name)
+                            && f.desc.equals(field.desc)), name + ": missing shadow " + field.name);
+                }
+            }
             for (MethodNode method : mixin.methods) {
                 if (find(method.visibleAnnotations, "Lorg/spongepowered/asm/mixin/Shadow;") != null
                         || find(method.invisibleAnnotations, "Lorg/spongepowered/asm/mixin/Shadow;") != null) {

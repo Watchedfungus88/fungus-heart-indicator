@@ -24,6 +24,7 @@ public final class HeartPlatform {
     public static int sneakingColor(Minecraft client) { return 0x80FFFFFF; }
 
     public static boolean hidden(Minecraft client) { return client.gui.hud.isHidden(); }
+    public static boolean hasScreen(Minecraft client) { return client.gui.screen() != null; }
     public static boolean invulnerable(LivingEntity entity) { return entity.invulnerableTime > 0; }
     public static double nameRange(AbstractClientPlayer player) {
         return player.getAttributeValue(Attributes.NAME_TAG_DISTANCE);
